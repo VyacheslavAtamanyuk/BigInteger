@@ -22,8 +22,6 @@ int2023_t operator-(const int2023_t& lhs, const int2023_t& rhs);
 
 int2023_t operator*(const int2023_t& lhs, const int2023_t& rhs);
 
-bool LessThan(const int2023_t& lhs, const int2023_t& rhs, int i, int j, int size);
-
 int2023_t operator/(const int2023_t& lhs, const int2023_t& rhs);
 
 bool operator==(const int2023_t& lhs, const int2023_t& rhs);

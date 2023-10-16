@@ -92,17 +92,19 @@ int2023_t operator*(const int2023_t& lhs, const int2023_t& rhs) {
     int count = 0;
     uint8_t intermediate[253];
     for (int i = 252; i >= 0; i--) {
-        int carry = 0;
-        for (int j = 252; j >=0; j--) {
-            int a = (int) lhs.storage[j] * rhs.storage[i] + carry;
-            carry = a/256;
-            intermediate[j] = a%256;
-        }
-        uint8_t carry1 = 0;
-        for (int k = 252; k >= count; k--) {
-            uint8_t copy = result.storage[k-count];
-            result.storage[k-count] = (result.storage[k-count] + intermediate[k] + carry1) % 256;
-            carry1 = (copy + intermediate[k] + carry1) / 256;
+        if (rhs.storage[i] != 0) {
+            int carry = 0;
+            for (int j = 252; j >= 0; j--) {
+                int a = (int) lhs.storage[j] * rhs.storage[i] + carry;
+                carry = a / 256;
+                intermediate[j] = a % 256;
+            }
+            uint8_t carry1 = 0;
+            for (int k = 252; k >= count; k--) {
+                uint8_t copy = result.storage[k - count];
+                result.storage[k - count] = (result.storage[k - count] + intermediate[k] + carry1) % 256;
+                carry1 = (copy + intermediate[k] + carry1) / 256;
+            }
         }
         count++;
     }
@@ -159,11 +161,20 @@ int2023_t operator/(const int2023_t& lhs, const int2023_t& rhs) {
         return lhs;
     }
     for (int k = 253 - (j - i) - 1; k < 253; k++) {
-        while (divide.storage[k] <= 255) {
-            divide.storage[k]++;
-            if ((lhs - rhs*divide).storage[0] >= 128) {
-                divide.storage[k]--;
+        int l = 0;
+        int r = 255;
+        while (r - l > 0) {
+            if (r-l == 1) {
+                divide.storage[k] = l;
                 break;
+            }
+            int m = (l+r)/2;
+            divide.storage[k] = m;
+            if ((lhs - rhs*divide).storage[0] >= 128) {
+                r = m;
+            }
+            else {
+                l = m;
             }
         }
     }
